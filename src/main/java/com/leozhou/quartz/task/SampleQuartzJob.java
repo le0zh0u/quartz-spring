@@ -20,10 +20,6 @@ public class SampleQuartzJob extends QuartzJobBean {
     @Autowired
     private TaskService taskService;
 
-    public void run() {
-        logger.info("date: {}", new Date());
-    }
-
     @Override
     protected void executeInternal(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         taskService.printTime();
