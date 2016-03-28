@@ -4,7 +4,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <bean id="sampleQuartzJobDetail" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
-        <property name="durability" value="true" />
+        <property name="durability" value="true"/>
         <property name="jobClass" value="com.leozhou.quartz.task.SampleQuartzJob"/>
     </bean>
 
@@ -19,6 +19,7 @@
     </bean>
 
     <bean id="quartzScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="jobFactory" ref="springBeanJobFactory"/>
         <property name="triggers">
             <list>
                 <ref bean="myTrigger"/>
@@ -26,4 +27,5 @@
         </property>
     </bean>
 
+    <bean id="springBeanJobFactory" class="com.leozhou.quartz.task.config.SpringBeanJobFactory"/>
 </beans>
