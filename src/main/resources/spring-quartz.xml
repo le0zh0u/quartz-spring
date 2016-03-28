@@ -3,23 +3,30 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
+    <!-- 要调用的工作类 -->
     <bean id="sampleQuartzJobDetail" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
         <property name="durability" value="true"/>
         <property name="jobClass" value="com.leozhou.quartz.task.SampleQuartzJob"/>
     </bean>
 
-
+    <!-- 定义触发时间 -->
     <bean id="myTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
         <!--<property name="name" value="trigger_default_name"/>-->
         <!--<property name="group" value="trigger_default"/>-->
         <property name="jobDetail" ref="sampleQuartzJobDetail"/>
         <property name="cronExpression">
-            <value>0/10 * * * * ?</value>
+            <value>0/15 * * * * ?</value>
         </property>
     </bean>
 
+    <!-- 总管理类 如果将lazy-init='false'那么容器启动就会执行调度程序 -->
     <bean id="quartzScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
         <property name="jobFactory" ref="springBeanJobFactory"/>
+        <property name="applicationContextSchedulerContextKey" value="applicationContextKey"/>
+        <property name="configLocation" value="classpath:quartz.properties"/>
+        <property name="overwriteExistingJobs" value="true" />
+        <property name="autoStartup" value="true" />
         <property name="triggers">
             <list>
                 <ref bean="myTrigger"/>
@@ -28,4 +35,19 @@
     </bean>
 
     <bean id="springBeanJobFactory" class="com.leozhou.quartz.task.config.SpringBeanJobFactory"/>
+
+    <!--引入配置文件-->
+    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="location" value="classpath:db.properties"/>
+    </bean>
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" destroy-method="close">
+        <property name="driverClassName" value="${driver}"/>
+        <property name="url" value="${url}"/>
+        <property name="username" value="${username}"/>
+        <property name="password" value="${password}"/>
+        <property name="initialSize" value="${initialSize}"/>
+        <property name="maxActive" value="${maxActive}"/>
+        <property name="minIdle" value="${minIdle}"/>
+        <property name="maxWait" value="${maxWait}"/>
+    </bean>
 </beans>
